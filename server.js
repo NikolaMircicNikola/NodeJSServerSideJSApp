@@ -1,23 +1,39 @@
 const express = require("express");
 const app = express();
-const morgan = require("morgan");
+const http = require('http').Server(app);
+const io = require("socket.io")(http,{});
+
+const bodyParser = require("body-parser");
 const path = require("path");
-const router = express.Router();
+const fs = require("fs");
+const morgan = require("morgan");
 
-const ip = "192.168.1.11";
-const port = process.env.PORT || 80;
+const IP = "192.168.1.8";
+const PORT = process.env.PORT || 80;
+const START_MSG = "Server started with NODEMON!";
 
-app.get('/',(req, res)=>{
-	if(req.url === "/favicon.ico"){
-		return;
-	}
-	res.sendFile(path.join(__dirname + "/index.html"));
-	console.log("Connected!!");
+app.use(morgan("dev"));
+app.use(express.static(path.join(__dirname)));
+app.use("/assets",express.static(path.join(__dirname,"/client/assets")));
+app.use(bodyParser.urlencoded({ extended: false }));
+
+const dataHandler = require("./db/dataHandler.js");
+var handler = new dataHandler(fs,io,__dirname+"/db/users");
+var listener = require("./routing/socketListener.js");
+require("./routing/router.js")(app,handler,__dirname);
+
+io.sockets.on("connection",(socket)=>{
+	listener(io,socket,handler);
+	socket.on("disconnect",()=>{
+		console.log("[Server]: User disconnected!");
+	})
+})
+
+http.listen(PORT,process.env.OPENSHIFT_NODEJS_IP || process.env.IP || IP,()=>{
+	console.log(START_MSG);
+	console.log("Opt 1: "+ process.env.OPENSHIFT_NODEJS_IP);
+	console.log("Opt 2: "+ process.env.IP);
+	console.log("Opt 2: "+ IP);
 });
 
-app.use(morgan('dev'));
-app.use('/CSS',express.static(path.join(__dirname + "/CSS")));
-app.use('/',router);
-app.listen(port,ip,()=>{
-	console.log("Listenning...");
-});
+

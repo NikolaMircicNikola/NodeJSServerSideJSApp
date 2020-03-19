@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Main Page</title>
+	<link rel="stylesheet" type="text/css" href="/assets/main.css">
+</head>
+<body>
+	<h1>Main page</h1>
+	<h3>Users: <p id="uc"></p></h3>
+	<form action="/login" method="post" id="login">
+		<label>Name: <input type="text" name="name"></label><br><br>
+		<label>Password: <input type="password" name="password"> <button id="showPassLog">See Password</button></label><br><br>
+	</form>
+	<form action="/register" method="post" id="register">
+		<label>Name: <input type="text" name="name"></label><br><br>
+		<label>Surname: <input type="text" name="surname"></label><br><br>
+		<label>E-Mail: <input type="text" name="eMail"></label><br><br>
+		<label>Password: <input type="password" name="password"> <button id="showPassReg">See Password</button></label><br><br>
+		<label>Age: <input type="number" name="age"></label><br><br>
+	</form>
+
+	<button id="loginbtn">Log in</button><p> or </p><button id="registerbtn">Register</button>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/assets/JS/main.js"></script>
+</body>
+</html>
